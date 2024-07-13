@@ -1,20 +1,53 @@
 import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Button, TextInput } from "react-native-paper";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 
-export default function Login({navigation}) {
+export default function Login({ navigation }) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const auth = getAuth();
 
-    function handleLogin(){
-        // iremos criar a logica de autenticacao aqui (firebase)
-        if (password == "123")
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // User is signed in, see docs for a list of available properties
+            // https://firebase.google.com/docs/reference/js/auth.user
+            const uid = user.uid;
             navigation.navigate("Home")
-        else setError("senha incorreta");
+            // ...
+        } else {
+            // User is signed out
+            // ...
+            navigation.navigate("Login")
+        }
+    });
+
+    function handleLogin() {
+        
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                // Signed in 
+                const user = userCredential.user;
+                //alert(user.email + " logado")
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                alert("Não foi possível realizar o login.")
+            });
+
+
+        
+
+
+
+        /*if (password == "123")
+            navigation.navigate("Home")
+        else setError("senha incorreta");*/
     }
 
-    function handleForget(){
+    function handleForget() {
 
     }
 
